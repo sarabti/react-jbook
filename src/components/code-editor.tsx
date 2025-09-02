@@ -1,18 +1,45 @@
 import "./code-editor.css";
 import MonacoEditor, { type OnMount } from "@monaco-editor/react";
-import prettier from 'prettier';
+import prettier from "prettier";
 import parserBabel from "prettier/plugins/babel";
 import parserEstree from "prettier/plugins/estree";
 import { useRef } from "react";
+import { parse } from "@babel/parser";
+import traverse from "@babel/traverse";
+import MonacoJSXHighlighter from "monaco-jsx-highlighter";
 
 interface ICodeEditorProps {
   initialValue: string;
   onChange(value: string): void;
 }
+
 const CodeEditor: React.FC<ICodeEditorProps> = ({ initialValue, onChange }) => {
   const editorRef = useRef<any>(null);
 
-  const setEditorRef: OnMount = (editor) => editorRef.current = editor
+  const onEditorMount: OnMount = (editor, monaco) => {
+    editorRef.current = editor;
+
+    // Minimal Babel setup for React JSX parsing:
+    const babelParse = (code: string) =>
+      parse(code, {
+        sourceType: "module",
+        plugins: ["jsx"], // Make sure JSX plugin is enabled
+      });
+
+    // Instantiate the highlighter
+    const monacoJSXHighlighter = new MonacoJSXHighlighter(
+      monaco,
+      babelParse,
+      traverse,
+      editor
+    );
+
+    // Activate highlighting (debounceTime default: 100ms)
+    monacoJSXHighlighter.highlightOnDidChangeModelContent(100);
+
+    // Activate JSX commenting
+    monacoJSXHighlighter.addJSXCommentCommand();
+  };
 
   const handleEditorChange = (value: string | undefined) =>
     onChange(value ?? "");
@@ -20,15 +47,15 @@ const CodeEditor: React.FC<ICodeEditorProps> = ({ initialValue, onChange }) => {
   const onFormatClick = async () => {
     const unformatted = editorRef.current.getModel().getValue();
 
-    const formatted = (await prettier
-      .format(unformatted, {
-        parser: 'babel',
+    const formatted = (
+      await prettier.format(unformatted, {
+        parser: "babel",
         plugins: [parserBabel, parserEstree],
         useTabs: false,
         semi: true,
         singleQuote: true,
-      }))
-      .replace(/\n$/, '');
+      })
+    ).replace(/\n$/, "");
 
     editorRef.current.setValue(formatted);
   };
@@ -44,7 +71,7 @@ const CodeEditor: React.FC<ICodeEditorProps> = ({ initialValue, onChange }) => {
       <MonacoEditor
         value={initialValue}
         onChange={handleEditorChange}
-        onMount={setEditorRef}
+        onMount={onEditorMount}
         theme="vs-dark"
         language="javascript"
         height="500px"
