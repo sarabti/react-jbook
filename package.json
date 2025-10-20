@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.1",
     "@babel/parser": "^7.28.3",
     "@babel/traverse": "^7.28.3",
     "@monaco-editor/react": "^4.7.0",
