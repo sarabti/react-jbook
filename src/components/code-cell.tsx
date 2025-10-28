@@ -1,42 +1,51 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import CodeEditor from "./code-editor";
 import Preview from "./preview";
-import bundler from "../bundler";
-import Resizable from './resizable';
-import type { Cell } from '../state';
-import { useActions } from '../state/hooks/use-actions';
+import Resizable from "./resizable";
+import type { Cell } from "../state";
+import { useActions } from "../state/hooks/use-actions";
+import { useTypedSelector } from "../state/hooks/use-typed-selector";
 
 interface CodeCellProps {
   cell: Cell;
 }
 
 const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
-  const [code, setCode] = useState("");
-  const [err, setErr] = useState("");
-  const { updateCell } = useActions();
+  const { updateCell, createBundle } = useActions();
+  const bundle = useTypedSelector((state) => state.bundles?.[cell.id]);
 
   useEffect(() => {
+    if (!bundle) {
+      createBundle(cell.id, cell.content);
+      return;
+    }
+
     const timer = setTimeout(async () => {
-      const output = await bundler(cell.content);
-      setCode(output.code);
-      setErr(output.err);
+      createBundle(cell.id, cell.content);
     }, 750);
 
     return () => {
       clearTimeout(timer);
     };
-  }, [cell.content]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cell.content, cell.id]);
 
   return (
     <Resizable direction="vertical">
-      <div style={{ height: "calc(100% - 10px)", display: "flex", flexDirection: "row" }}>
+      <div
+        style={{
+          height: "calc(100% - 10px)",
+          display: "flex",
+          flexDirection: "row",
+        }}
+      >
         <Resizable direction="horizontal">
           <CodeEditor
             initialValue={cell.content}
             onChange={(value) => updateCell(cell.id, value)}
           />
         </Resizable>
-        <Preview code={code} err={err} />
+        {bundle && <Preview code={bundle.code} err={bundle.err} />}
       </div>
     </Resizable>
   );
