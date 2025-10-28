@@ -20,6 +20,7 @@ const ActionBar: React.FC<ActionBarProps> = ({ id }) => {
         </span>
       </button>
       <button
+        disabled={true}
         className="button is-primary is-small"
         onClick={() => moveCell(id, "down")}
       >
@@ -28,7 +29,6 @@ const ActionBar: React.FC<ActionBarProps> = ({ id }) => {
         </span>
       </button>
       <button
-        disabled={true}
         className="button is-primary is-small"
         onClick={() => deleteCell(id)}
       >
