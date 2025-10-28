@@ -3,7 +3,7 @@ import { ActionType } from "../action-types";
 import type { Action } from "../actions";
 import type { Cell } from "../cell";
 
-interface CellsState {
+export interface CellsState {
   loading: boolean;
   error: string | null;
   order: string[];
