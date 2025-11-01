@@ -1,5 +1,12 @@
+import express from "express";
+import http from "http";
+
 export const serve = (port: number, filename: string, dir: string) => {
-  console.log('serving traffic on port', port);
-  console.log('saving/fetching cells from', filename);
-  console.log('that file is in dir', dir);
+  const app = express();
+  const server = http.createServer(app);
+
+  return new Promise<void>((resolve, reject) => {
+    server.on("error", reject);
+    server.listen(port, () => resolve());
+  });
 };
