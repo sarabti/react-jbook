@@ -6,11 +6,11 @@ import type { Cell } from "../state";
 import AddCell from "./add-cell";
 
 const CellList: React.FC = () => {
-  const cells = useTypedSelector(({ cells: { order, data } }) =>
-    order.map((id: string | number) => data[id])
+  const cells = useTypedSelector(({ cells }) =>
+    cells?.order.map((id: string | number) => cells?.data[id])
   );
 
-  const renderedCells = cells.map((cell: Cell) => (
+  const renderedCells = cells?.map((cell: Cell) => (
     <Fragment key={cell.id}>
       <CellListItem cell={cell} />
       <AddCell previousCellId={cell.id} />
@@ -19,7 +19,7 @@ const CellList: React.FC = () => {
 
   return (
     <div className="cell-list">
-      <AddCell forceVisible={cells.length === 0} previousCellId={null} />
+      <AddCell forceVisible={cells?.length === 0} previousCellId={null} />
       {renderedCells}
     </div>
   );

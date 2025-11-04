@@ -31,7 +31,7 @@ export default async (rawCode: string) => {
   } catch (err: unknown) {
     return {
       code: "",
-      err: err.message,
+      err: (err as { message: string }).message,
     };
   }
 };

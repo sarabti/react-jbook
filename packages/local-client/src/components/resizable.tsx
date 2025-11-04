@@ -45,7 +45,7 @@ const Resizable: React.FC<PropsWithChildren<ResizableProps>> = ({
       height: Infinity,
       width,
       resizeHandles: ["e"],
-      onResizeStop: (event, data) => {
+      onResizeStop: (_event, data) => {
         setWidth(data.size.width);
       },
     };
