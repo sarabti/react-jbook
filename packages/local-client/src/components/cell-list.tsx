@@ -1,14 +1,21 @@
 import "./cell-list.css";
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import { useTypedSelector } from "../state/hooks/use-typed-selector";
 import CellListItem from "./cell-list-item";
 import type { Cell } from "../state";
 import AddCell from "./add-cell";
+import { useActions } from "../state/hooks/use-actions";
 
 const CellList: React.FC = () => {
   const cells = useTypedSelector(({ cells }) =>
     cells?.order.map((id: string | number) => cells?.data[id])
   );
+  const { fetchCells } = useActions();
+
+  useEffect(() => {
+    fetchCells();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const renderedCells = cells?.map((cell: Cell) => (
     <Fragment key={cell.id}>

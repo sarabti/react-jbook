@@ -1,31 +1,9 @@
+import { persistMiddlware } from './middlewares/persist-middlware';
 import reducers from './reducers';
 import { configureStore } from '@reduxjs/toolkit';
-import { ActionType } from './action-types';
 
 export const store = configureStore({
   reducer: reducers,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(persistMiddlware),
 })
-
-store.dispatch({
-  type: ActionType.INSERT_CELL_AFTER,
-  payload: {
-    id: null,
-    type: 'text',
-  },
-});
-
-store.dispatch({
-  type: ActionType.INSERT_CELL_AFTER,
-  payload: {
-    id: null,
-    type: 'text',
-  },
-});
-
-store.dispatch({
-  type: ActionType.INSERT_CELL_AFTER,
-  payload: {
-    id: null,
-    type: 'text',
-  },
-});
